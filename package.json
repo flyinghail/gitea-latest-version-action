@@ -1,0 +1,32 @@
+{
+  "name": "gitea-latest-version",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flyinghail/gitea-latest-version-action.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/flyinghail/gitea-latest-version-action/issues"
+  },
+  "homepage": "https://github.com/flyinghail/gitea-latest-version-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.0",
+    "gitea-js": "^1.23.0",
+    "semver": "^7.7.1"
+  },
+  "devDependencies": {
+    "@types/semver": "^7.5.8",
+    "@vercel/ncc": "^0.38.3",
+    "typescript": "^5.7.3"
+  }
+}

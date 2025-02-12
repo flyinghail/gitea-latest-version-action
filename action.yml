@@ -1,0 +1,33 @@
+name: Gitea Latest Version
+description: Get the latest version from the tags
+inputs:
+  gitea-token:
+    description: The Gitea token
+    required: true
+  prefix:
+    description: The prefix used for tag. defaults to v -> v1.2.0
+    required: true
+    default: v
+  fallback:
+    description: The fallback version used if none has been found, defaults to 0.0.0
+    required: false
+    default: 0.0.0
+outputs:
+  major-version:
+    description: The major version
+  minor-version:
+    description: The minor version
+  patch-version:
+    description: The patch version
+  major-number:
+    description: The major number
+  minor-number:
+    description: The minor number
+  patch-number:
+    description: The patch number
+runs:
+  using: node20
+  main: dist/index.js
+branding:
+  color: purple
+  icon: arrow-up-circle
