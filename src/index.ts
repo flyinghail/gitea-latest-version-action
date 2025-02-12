@@ -10,7 +10,13 @@ function getGiteaApi() {
     })
 }
 
-export async function findLastVersion(api: Api<unknown>, prefix: string) {
+function getFallbackVersion() {
+    const fallback = semver.clean(core.getInput('fallback')) || '0.0.0'
+    console.log(`No tags found, using ${fallback}`);
+    return fallback;
+}
+
+async function findLastVersion(api: Api<unknown>, prefix: string) {
     const {owner, repo} = github.context.repo
     console.log("Owner", owner)
     console.log("Repo", repo)
@@ -38,9 +44,7 @@ export async function findLastVersion(api: Api<unknown>, prefix: string) {
     }
 
 
-    const fallback = semver.clean(core.getInput('fallback')) || '0.0.0'
-    console.log(`No tags found, using ${fallback}`);
-    return fallback;
+    return getFallbackVersion()
 }
 
 function getSemverVersion(prefix: string, tag: string) {
@@ -52,14 +56,24 @@ function getSemverVersion(prefix: string, tag: string) {
         }
     }
 
-    return null
+    return getFallbackVersion()
 }
+
+async function getLastVersion(api: Api<unknown>, prefix: string) {
+    const input = core.getInput('last-version');
+    if(input) {
+        return getSemverVersion(prefix, input);
+    }
+
+    return findLastVersion(api, prefix);
+}
+
 
 async function run() {
     const prefix = core.getInput('prefix')
     const giteaApi = getGiteaApi()
 
-    const lastVersion = await findLastVersion(giteaApi, prefix)
+    const lastVersion = await getLastVersion(giteaApi, prefix)
     console.log('Found last version', lastVersion)
 
     const major = semver.major(lastVersion)

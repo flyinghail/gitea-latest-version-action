@@ -15,6 +15,9 @@ Example Prefix `"v"` -> Version `"v0.1.0"`
 ### `fallback`
 Fallback version if no tags are found. Default `"0.0.0"`.
 
+### `latest-version`
+Manually specify the latest version number.
+
 ## Outputs
 
 ### `major-version`

@@ -34381,34 +34381,6 @@ module.exports = parseParams
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
@@ -34418,13 +34390,6 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
-
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  findLastVersion: () => (/* binding */ findLastVersion)
-});
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(7484);
@@ -40867,6 +40832,11 @@ function getGiteaApi() {
         token: core.getInput('gitea-token'), // generate one at https://gitea.example.com/user/settings/applications
     });
 }
+function getFallbackVersion() {
+    const fallback = semver.clean(core.getInput('fallback')) || '0.0.0';
+    console.log(`No tags found, using ${fallback}`);
+    return fallback;
+}
 async function findLastVersion(api, prefix) {
     const { owner, repo } = github.context.repo;
     console.log("Owner", owner);
@@ -40889,9 +40859,7 @@ async function findLastVersion(api, prefix) {
         }
         page++;
     }
-    const fallback = semver.clean(core.getInput('fallback')) || '0.0.0';
-    console.log(`No tags found, using ${fallback}`);
-    return fallback;
+    return getFallbackVersion();
 }
 function getSemverVersion(prefix, tag) {
     if (tag.startsWith(prefix)) {
@@ -40901,12 +40869,19 @@ function getSemverVersion(prefix, tag) {
             return version;
         }
     }
-    return null;
+    return getFallbackVersion();
+}
+async function getLastVersion(api, prefix) {
+    const input = core.getInput('last-version');
+    if (input) {
+        return getSemverVersion(prefix, input);
+    }
+    return findLastVersion(api, prefix);
 }
 async function run() {
     const prefix = core.getInput('prefix');
     const giteaApi = getGiteaApi();
-    const lastVersion = await findLastVersion(giteaApi, prefix);
+    const lastVersion = await getLastVersion(giteaApi, prefix);
     console.log('Found last version', lastVersion);
     const major = semver.major(lastVersion);
     const minor = semver.minor(lastVersion);
