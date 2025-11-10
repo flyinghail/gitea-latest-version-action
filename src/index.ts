@@ -67,13 +67,13 @@ function getSemverVersion(prefix: string, tag: string) {
 async function getLastVersion() {
   const giteaApi = getGiteaApi()
   const prefix = core.getInput('prefix')
-  const input = core.getInput('last-version');
+  const input = core.getInput('latest');
   if (input) {
     const version = getSemverVersion(prefix, input);
     if (version) {
       return version
     }
-    console.warn(`Invalid last-version input: ${input}, falling back to tag search`)
+    console.warn(`Invalid latest input: ${input}, falling back to tag search`)
   }
 
   return findLastVersion(giteaApi, prefix);
